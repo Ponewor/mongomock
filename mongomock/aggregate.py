@@ -163,7 +163,10 @@ class _Parser(object):
                     "'%s' is a valid operation but it is not supported by Mongomock yet." % k)
             if k.startswith('$'):
                 raise OperationFailure("Unrecognized expression '%s'" % k)
-            value_dict[k] = self.parse(v)
+            try:
+                value_dict[k] = self.parse(v)
+            except KeyError:
+                pass
 
         return value_dict
 

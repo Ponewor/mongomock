@@ -2489,6 +2489,53 @@ class MongoClientAggregateTest(_CollectionComparisonTest):
             'cond': {'$lt': ['$$this.price', 100]},
         }}}}])
 
+    def test__group_with_missing_fields1(self):
+        self.cmp.do.remove()
+
+        data = [
+            {'_id': ObjectId(), 'a': 0, 'b': 0},
+            {'_id': ObjectId(), 'a': 0},
+            {'_id': ObjectId(), 'b': 0},
+            {'_id': ObjectId()}
+        ]
+        for item in data:
+            self.cmp.do.insert(item)
+
+        pipeline = [
+            {'$group': {'_id': {'a': '$a', 'b': '$b'}}},
+        ]
+        self.cmp.compare_ignore_order.aggregate(pipeline)
+
+    def test__group_with_missing_fields2(self):
+        self.cmp.do.remove()
+
+        data = [
+            {'_id': ObjectId(), 'a': 0},
+            {'_id': ObjectId()}
+        ]
+        for item in data:
+            self.cmp.do.insert(item)
+
+        pipeline = [
+            {'$group': {'_id': {'a': '$a'}}},
+        ]
+        self.cmp.compare_ignore_order.aggregate(pipeline)
+
+    def test__group_with_missing_fields3(self):
+        self.cmp.do.remove()
+
+        data = [
+            {'_id': ObjectId(), 'a': 0},
+            {'_id': ObjectId()}
+        ]
+        for item in data:
+            self.cmp.do.insert(item)
+
+        pipeline = [
+            {'$group': {'_id': '$a'}},
+        ]
+        self.cmp.compare_ignore_order.aggregate(pipeline)
+
 
 def _LIMIT(*args):
     return lambda cursor: cursor.limit(*args)
