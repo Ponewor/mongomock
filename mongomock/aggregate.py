@@ -372,7 +372,12 @@ def _accumulate_group(output_fields, group_list):
             continue
         for operator, key in six.iteritems(value):
             key_getter = functools.partial(_parse_expression, key)
-            values = [key_getter(doc) for doc in group_list]
+            values = []
+            for doc in group_list:
+                try:
+                    values.append(key_getter(doc))
+                except KeyError:
+                    pass
             if operator in _GROUPING_OPERATOR_MAP:
                 doc_dict[field] = _GROUPING_OPERATOR_MAP[operator](values)
             elif operator == '$first':
