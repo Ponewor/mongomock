@@ -2570,6 +2570,21 @@ class MongoClientAggregateTest(_CollectionComparisonTest):
         self.cmp.compare.aggregate([{'$addFields': {'c': 4}}])
         self.cmp.compare.aggregate([{'$addFields': {'b': {'$add': ['$a', '$b', 5]}}}])
 
+    def test__aggregate_with_missing_fields1(self):
+        self.cmp.do.remove()
+
+        data = [
+            {'_id': ObjectId(), 'a': 0, 'b': 1},
+            {'_id': ObjectId(), 'a': 0},
+        ]
+        for item in data:
+            self.cmp.do.insert(item)
+
+        pipeline = [
+            {'$group': {'_id': '$a', 'b': {'$sum': '$b'}}},
+        ]
+        self.cmp.compare_ignore_order.aggregate(pipeline)
+
 
 def _LIMIT(*args):
     return lambda cursor: cursor.limit(*args)
