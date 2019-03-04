@@ -2565,6 +2565,11 @@ class MongoClientAggregateTest(_CollectionComparisonTest):
         with self.assertRaises(OperationFailure):
             self.fake_collection.aggregate([{'$project': {'c': {'$add': ['$date', 1, '$date']}}}])
 
+    def test__add_fields(self):
+        self.cmp.compare.aggregate([{'$addFields': {'c': 3}}])
+        self.cmp.compare.aggregate([{'$addFields': {'c': 4}}])
+        self.cmp.compare.aggregate([{'$addFields': {'b': {'$add': ['$a', '$b', 5]}}}])
+
 
 def _LIMIT(*args):
     return lambda cursor: cursor.limit(*args)
