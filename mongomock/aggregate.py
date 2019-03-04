@@ -163,7 +163,10 @@ class _Parser(object):
                     "'%s' is a valid operation but it is not supported by Mongomock yet." % k)
             if k.startswith('$'):
                 raise OperationFailure("Unrecognized expression '%s'" % k)
-            value_dict[k] = self.parse(v)
+            try:
+                value_dict[k] = self.parse(v)
+            except KeyError:
+                pass
 
         return value_dict
 
@@ -406,11 +409,10 @@ def _accumulate_group(output_fields, group_list):
         if field == '_id':
             continue
         for operator, key in six.iteritems(value):
-            key_getter = functools.partial(_parse_expression, key)
             values = []
             for doc in group_list:
                 try:
-                    values.append(key_getter(doc))
+                    values.append(_parse_expression(key, doc))
                 except KeyError:
                     pass
             if operator in _GROUPING_OPERATOR_MAP:

@@ -2570,15 +2570,58 @@ class MongoClientAggregateTest(_CollectionComparisonTest):
         self.cmp.compare.aggregate([{'$addFields': {'c': 4}}])
         self.cmp.compare.aggregate([{'$addFields': {'b': {'$add': ['$a', '$b', 5]}}}])
 
+    def test__group_with_missing_fields1(self):
+        self.cmp.do.remove()
+
+        data = [
+            {'a': 0, 'b': 0},
+            {'a': 0},
+            {'b': 0},
+            {}
+        ]
+        self.cmp.do.insert(data)
+
+        pipeline = [
+            {'$group': {'_id': {'a': '$a', 'b': '$b'}}},
+        ]
+        self.cmp.compare_ignore_order.aggregate(pipeline)
+
+    def test__group_with_missing_fields2(self):
+        self.cmp.do.remove()
+
+        data = [
+            {'a': 0},
+            {}
+        ]
+        self.cmp.do.insert(data)
+
+        pipeline = [
+            {'$group': {'_id': {'a': '$a'}}},
+        ]
+        self.cmp.compare_ignore_order.aggregate(pipeline)
+
+    def test__group_with_missing_fields3(self):
+        self.cmp.do.remove()
+
+        data = [
+            {'a': 0},
+            {}
+        ]
+        self.cmp.do.insert(data)
+
+        pipeline = [
+            {'$group': {'_id': '$a'}},
+        ]
+        self.cmp.compare_ignore_order.aggregate(pipeline)
+
     def test__aggregate_with_missing_fields1(self):
         self.cmp.do.remove()
 
         data = [
-            {'_id': ObjectId(), 'a': 0, 'b': 1},
-            {'_id': ObjectId(), 'a': 0},
+            {'a': 0, 'b': 1},
+            {'a': 0},
         ]
-        for item in data:
-            self.cmp.do.insert(item)
+        self.cmp.do.insert(data)
 
         pipeline = [
             {'$group': {'_id': '$a', 'b': {'$sum': '$b'}}},
