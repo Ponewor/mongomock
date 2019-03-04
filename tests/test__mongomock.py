@@ -2628,6 +2628,20 @@ class MongoClientAggregateTest(_CollectionComparisonTest):
         ]
         self.cmp.compare_ignore_order.aggregate(pipeline)
 
+    def test__add_fields_with_missing_fields(self):
+        self.cmp.do.remove()
+
+        data = [
+            {'a': 0},
+            {}
+        ]
+        self.cmp.do.insert(data)
+
+        pipeline = [
+            {'$addFields': {'b': '$a'}},
+        ]
+        self.cmp.compare_ignore_order.aggregate(pipeline)
+
 
 def _LIMIT(*args):
     return lambda cursor: cursor.limit(*args)

@@ -793,7 +793,10 @@ def _handle_count_stage(in_collection, database, options):
 def _handle_add_fields_stage(in_collection, unused_database, options):
     for doc in in_collection:
         for key, value in options.items():
-            doc[key] = _parse_expression(value, doc)
+            try:
+                doc[key] = _parse_expression(value, doc)
+            except KeyError:
+                pass
     return in_collection
 
 
